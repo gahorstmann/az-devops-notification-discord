@@ -6,29 +6,29 @@ from app.resource.discord_api import DiscordApi
 
 
 class WorkItem:
-    def __init__(self, webhook_id, webhook_token):
+    def __init__(self, type, webhook_id, webhook_token):
+        self.type = type
         self.discord_api = DiscordApi(webhook_id, webhook_token)
     
-    def _color_switch(self, event_type) -> str:
-        if event_type == "Created":
+    def _color_switch(self, value) -> str:
+        if value == "created":
             return Color.GREEN.value
-        elif event_type == "Deleted":
+        elif value == "deleted":
             return Color.RED.value
-        elif event_type == "Restored":
+        elif value == "restored":
             return Color.YELLOW.value
-        elif event_type == "Updated":
+        elif value == "updated":
             return Color.BLUE.value
         else:
             return Color.WHITE.value
 
-    def webhook(self, data):
+    def webhook(self, type, data):
         try:
-            event_type = data["eventType"].split(".")[1].capitalize()
             description = data["detailedMessage"]["markdown"]
             url = data["resource"]["url"]
-            color = int(self._color_switch(event_type), 16)
+            color = int(self._color_switch(type), 16)
             
-            if event_type == "Updated":
+            if type == "updated":
                 author = data["resource"]["revisedBy"]["displayName"]
                 author_image = data["resource"]["revisedBy"]["_links"]["avatar"]["href"]
                 
@@ -43,7 +43,7 @@ class WorkItem:
                 "content": None,
                 "embeds": [
                     {
-                    "title": event_type,
+                    "title": f'Work Item: {type.capitalize()}',
                     "description": description,
                     "url": url,
                     "color": color,
@@ -52,7 +52,7 @@ class WorkItem:
                         "icon_url": author_image
                     },
                     "footer": {
-                        "text": event_type
+                        "text": f'{type.capitalize()} at'
                     },
                     "timestamp": created_date
                     }

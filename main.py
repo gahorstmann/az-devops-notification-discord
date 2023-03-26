@@ -26,8 +26,8 @@ def hook():
     
     method = data["eventType"].split(".")
     if method[0] == "workitem":
-        work_item = WorkItem(webhook_id, webhook_token)
-        return work_item.webhook(data)
+        work_item = WorkItem(method[0], webhook_id, webhook_token)
+        return work_item.webhook(method[1], data)
     if method[0] == "build":
         return "oi",200
     
