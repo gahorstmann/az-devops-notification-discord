@@ -1,14 +1,11 @@
-import requests
-import json
-
 from app.enum.enums import Message, Color
 from app.resource.discord_api import DiscordApi
 
 
 class WorkItem:
-    def __init__(self, type, webhook_id, webhook_token):
-        self.type = type
-        self.discord_api = DiscordApi(webhook_id, webhook_token)
+    def __init__(self, settings):
+        self.type = settings[0]
+        self.discord_api = DiscordApi(settings[1], settings[2])
     
     def _color_switch(self, value) -> str:
         if value == "created":
@@ -23,7 +20,9 @@ class WorkItem:
             return Color.WHITE.value
 
     def webhook(self, type, data):
+        
         try:
+            title = f"Work Item: {type.capitalize()}"
             description = data["detailedMessage"]["markdown"]
             url = data["resource"]["url"]
             color = int(self._color_switch(type), 16)
@@ -32,18 +31,19 @@ class WorkItem:
                 author = data["resource"]["revisedBy"]["displayName"]
                 author_image = data["resource"]["revisedBy"]["_links"]["avatar"]["href"]
                 
-                created_date = data["resource"]["revisedDate"]
+                time = data["resource"]["revisedDate"]
             else:
                 author = data["resource"]["fields"]["System.CreatedBy"]["displayName"]
                 author_image = data["resource"]["fields"]["System.CreatedBy"]["_links"]["avatar"]["href"]
             
-                created_date = data["resource"]["fields"]["System.CreatedDate"]
+                time = data["resource"]["fields"]["System.CreatedDate"]
                 
+           
             body = {
                 "content": None,
                 "embeds": [
                     {
-                    "title": f'Work Item: {type.capitalize()}',
+                    "title": title,
                     "description": description,
                     "url": url,
                     "color": color,
@@ -52,9 +52,9 @@ class WorkItem:
                         "icon_url": author_image
                     },
                     "footer": {
-                        "text": f'{type.capitalize()} at'
+                        "text": "At"
                     },
-                    "timestamp": created_date
+                    "timestamp": time
                     }
                 ],
                 "username": "Azure Devops",
