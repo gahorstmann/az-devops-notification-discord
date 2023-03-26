@@ -2,18 +2,13 @@ import requests
 import json
 
 from app.enum.enums import Message, Color
+from app.resource.discord_api import DiscordApi
 
 
 class WorkItem:
-    def __init__(self, event_type, discord_id, discord_token):
-        self.event_type = event_type
-        self.base_url = "https://discord.com/api/webhooks"
-        self.webhook_url = f'{self.base_url}/{discord_id}/{discord_token}'
-        self.session = requests.Session()
-        self.headers = {
-            "Content-Type" : "application/json"
-        }
-
+    def __init__(self, webhook_id, webhook_token):
+        self.discord_api = DiscordApi(webhook_id, webhook_token)
+    
     def _color_switch(self, event_type) -> str:
         if event_type == "Created":
             return Color.GREEN.value
@@ -66,8 +61,7 @@ class WorkItem:
                 "attachments": []
             }
             
-            response = self.session.post(self.webhook_url, data=json.dumps(body), headers=self.headers)
-            return ({"message": Message.WEBHOOK_SUCCESS_MESSAGE.value}), 200
+            return self.discord_api.post_webhook(body)
                 
         except KeyError as e:
             return ({"error": Message.KEY_ERROR_MESSAGE.value.format(e.args[0].upper())}), 400

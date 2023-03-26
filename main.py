@@ -2,8 +2,10 @@ import os
 import json
 
 from flask import Flask, request
+
 from app.resource.work_item import WorkItem
 from app.enum.enums import Message
+
 
 PORT = int(os.environ.get('PORT', 5000))
 
@@ -24,8 +26,11 @@ def hook():
     
     method = data["eventType"].split(".")
     if method[0] == "workitem":
-        work_item = WorkItem("", webhook_id, webhook_token)
+        work_item = WorkItem(webhook_id, webhook_token)
         return work_item.webhook(data)
+    if method[0] == "build":
+        return "oi",200
+    
     
     return ({'error': Message.EVENT_TYPE_ERROR_MESSAGE.value}), 404
 
