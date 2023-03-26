@@ -1,6 +1,7 @@
 # Az-Devops-Notification-Discord
 Integrate Azure Devops notifications in Discord
 
+![img](docs/example.png)
 
 Triggers Working:
 - [x] Work Items
@@ -46,11 +47,11 @@ ngrok http 5000
 
 2. Create Subscription and select Web Hooks:
 
-![img](docs/1.png)
+![img](docs/az1.png)
 
 3. Select Trigger type:
 
-![img](docs/2.png)
+![img](docs/az2.png)
 
 4. Set URL for Ngrok
 
@@ -68,8 +69,8 @@ discord-token: sdkljasnjlkqejiko3rqjopiQPJI09321489jilkfjlkjiqjp314ipme8OSKLR7yG
 
 6. Set Resource Version Latest:
 
-![img](docs/3.png)
+![img](docs/az3.png)
 
 7. Test and Finish:
 
-![img](docs/4.png)
+![img](docs/az4.png)
