@@ -6,8 +6,8 @@ Integrate Azure Devops notifications in Discord
 Triggers Working:
 - [x] Work Items
 - [x] Build
+- [x] Pull Request
 - [ ] Code Push
-- [ ] Pull Request
 - [ ] Release
 - [ ] Run Job
 - [ ] Run Stage
