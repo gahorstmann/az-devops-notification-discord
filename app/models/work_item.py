@@ -1,5 +1,5 @@
-from app.enum.enums import Message, Color
-from app.resource.discord_api import DiscordApi
+from app.utils import Message, Color
+from app.models.discord_api import DiscordApi
 
 
 class WorkItem:

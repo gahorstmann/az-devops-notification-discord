@@ -1,7 +1,7 @@
 import arrow
 
-from app.enum.enums import Message, Color
-from app.resource.discord_api import DiscordApi
+from app.utils import Message, Color
+from app.models.discord_api import DiscordApi
 
 
 class Build:
@@ -19,8 +19,7 @@ class Build:
         else:
             return Color.WHITE.value
 
-    def webhook(self, type, data):
-        
+    def webhook(self, data):
         try:
             result = data["resource"]["result"]
             title = f"Build: {result.replace('partially', 'partially ').capitalize()}"

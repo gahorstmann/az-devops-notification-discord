@@ -1,7 +1,7 @@
 import requests
 import json
 
-from app.enum.enums import Message, Color
+from app.utils import Message
 
 
 class DiscordApi:
