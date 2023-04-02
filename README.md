@@ -7,7 +7,7 @@ Triggers Working:
 - [x] Work Items
 - [x] Build
 - [x] Pull Request
-- [ ] Code Push
+- [x] Code Push
 - [ ] Release
 - [ ] Run Job
 - [ ] Run Stage
