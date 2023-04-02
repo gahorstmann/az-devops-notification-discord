@@ -4,7 +4,7 @@ from flask import Blueprint, request
 
 from app.models.work_item import WorkItem
 from app.models.build import Build
-from app.models.pull_request import PullRequest
+from app.models.repository import Repository
 from app.utils import Message
 
 
@@ -25,7 +25,7 @@ def hook():
     except json.JSONDecodeError:
         return ({'error': Message.JSON_ERROR.value}), 400 
     
-    method = data["eventType"].split(".")
+    method = data["eventType"].split(".")[0]
     settings = method[0], webhook_id, webhook_token
     
     if method[0] == "workitem":
@@ -36,8 +36,11 @@ def hook():
         build = Build(settings)
         return build.webhook(data)
     
-    if f"{method[0]}.{method[1]}" in ["ms.vss-code", "git.pullrequest"]:
-        pull_request = PullRequest(settings)
-        return pull_request.webhook(method[2], data)
+    if method[0] in ["ms", "git"]:
+        repository = Repository(settings)
+        if "pullrequest" in method[1]:
+            return repository.pull_request(method[1], data)
+        if "push" in method[1]:
+            return repository.push(method[1], data)
     
     return ({'error': Message.EVENT_TYPE_ERROR_MESSAGE.value}), 404

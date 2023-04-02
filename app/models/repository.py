@@ -1,10 +1,8 @@
-import arrow
-
 from app.utils import Message, Color
 from app.models.discord_api import DiscordApi
 
 
-class PullRequest:
+class Repository:
     def __init__(self, settings):
         self.type = settings[0]
         self.discord_api = DiscordApi(settings[1], settings[2])

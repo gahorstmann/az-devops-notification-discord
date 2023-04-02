@@ -20,7 +20,6 @@ class WorkItem:
             return Color.WHITE.value
 
     def webhook(self, type, data):
-        
         try:
             title = f"Work Item: {type.capitalize()}"
             description = data["detailedMessage"]["markdown"]
