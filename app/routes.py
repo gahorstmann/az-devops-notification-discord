@@ -25,12 +25,12 @@ def hook():
     except json.JSONDecodeError:
         return ({'error': Message.JSON_ERROR.value}), 400 
     
-    method = data["eventType"].split(".")[0]
+    method = data["eventType"].split(".")
     settings = method[0], webhook_id, webhook_token
     
     if method[0] == "workitem":
         work_item = WorkItem(settings)
-        return work_item.webhook(method[1], data)
+        return work_item.webhook(method[-1], data)
     
     if method[0] == "build":
         build = Build(settings)
@@ -39,8 +39,8 @@ def hook():
     if method[0] in ["ms", "git"]:
         repository = Repository(settings)
         if "pullrequest" in method[1]:
-            return repository.pull_request(method[1], data)
+            return repository.pull_request(method[-1], data)
         if "push" in method[1]:
-            return repository.push(method[1], data)
+            return repository.push(method[-1], data)
     
     return ({'error': Message.EVENT_TYPE_ERROR_MESSAGE.value}), 404

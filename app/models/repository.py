@@ -8,14 +8,8 @@ class Repository:
         self.discord_api = DiscordApi(settings[1], settings[2])
         
     def _color_switch(self, value) -> str:
-        if value in ["completed"]:
+        if value in ["push"]:
             return Color.GREEN.value
-        elif value in ["abandoned"]:
-            return Color.RED.value
-        elif value in ["created", "comment"]:
-            return Color.BLUE.value
-        elif value in ["merged", "updated"]:
-            return Color.YELLOW.value
         else:
             return Color.WHITE.value
 
@@ -25,7 +19,7 @@ class Repository:
         else:
             return value
     
-    def webhook(self, type, data):    
+    def pull_request(self, type, data):    
         try:
             if type == "updated":
                 if data["resource"]["status"] != "active":
@@ -40,7 +34,6 @@ class Repository:
             if pr_type == "comment":
                 url = data["resource"]["comment"]["_links"]["self"]["href"]
                 author = data["resource"]["comment"]["author"]["displayName"]
-                author_image = data["resource"]["comment"]["author"]["imageUrl"]
                 date = data["resource"]["comment"]["publishedDate"]
             else:
                 url = data["resource"]["url"]
@@ -64,8 +57,47 @@ class Repository:
                     "url": url,
                     "color": color,
                     "author": {
-                        "name": author,
-                        "icon_url": author_image
+                        "name": author
+                    },
+                    "footer": {
+                        "text": "At"
+                    },
+                    "timestamp": date
+                    }
+                ],
+                "username": "Azure Devops",
+                "attachments": []
+            }
+        
+            
+            return self.discord_api.post_webhook(body)
+                
+        except KeyError as e:
+            return ({"error": Message.KEY_ERROR_MESSAGE.value.format(e.args[0].upper())}), 400
+
+    def push(self, type, data):
+        try:
+            title = f"{type.capitalize()}"
+
+            url = data["resource"]["url"]
+            author = data["resource"]["pushedBy"]["displayName"]
+            
+            date = data["resource"]["date"]
+            
+            description = data["detailedMessage"]["markdown"]
+            
+            color = int(self._color_switch(type), 16)
+                    
+            body = {
+                "content": None,
+                "embeds": [
+                    {
+                    "title": title,
+                    "description": description,
+                    "url": url,
+                    "color": color,
+                    "author": {
+                        "name": author
                     },
                     "footer": {
                         "text": "At"
