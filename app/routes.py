@@ -1,4 +1,5 @@
 import json
+import re
 
 from flask import Blueprint, request
 
@@ -38,9 +39,10 @@ def hook():
     
     if method[0] in ["ms", "git"]:
         repository = Repository(settings)
-        if "pullrequest" in method[1]:
+        pr_match = re.search("pullrequest", method[1])
+        if pr_match:
             return repository.pull_request(method[-1], data)
-        if "push" in method[1]:
+        if "push" in method[-1]:
             return repository.push(method[-1], data)
     
-    return ({'error': Message.EVENT_TYPE_ERROR_MESSAGE.value}), 404
+    return ({'error': Message.EVENT_TYPE_ERROR_MESSAGE.value.format(method[-1])}), 404

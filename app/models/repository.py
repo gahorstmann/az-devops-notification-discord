@@ -8,8 +8,14 @@ class Repository:
         self.discord_api = DiscordApi(settings[1], settings[2])
         
     def _color_switch(self, value) -> str:
-        if value in ["push"]:
+        if value in ["push", "completed"]:
             return Color.GREEN.value
+        if value in ["abandoned"]:
+            return Color.RED.value
+        if value in ["created", "comment"]:
+            return Color.BLUE.value
+        if value in ["merged", "updated"]:
+            return Color.YELLOW.value
         else:
             return Color.WHITE.value
 
@@ -38,7 +44,6 @@ class Repository:
             else:
                 url = data["resource"]["url"]
                 author = data["resource"]["createdBy"]["displayName"]
-                author_image = data["resource"]["createdBy"]["imageUrl"]
                 date = data["resource"]["creationDate"]
             
             description = data["detailedMessage"]["markdown"]
