@@ -10,11 +10,11 @@ class Repository:
     def _color_switch(self, value) -> str:
         if value in ["push", "completed"]:
             return Color.GREEN.value
-        if value in ["abandoned"]:
+        elif value in ["abandoned"]:
             return Color.RED.value
-        if value in ["created", "comment"]:
+        elif value in ["created", "comment"]:
             return Color.BLUE.value
-        if value in ["merged", "updated"]:
+        elif value in ["merged", "updated"]:
             return Color.YELLOW.value
         else:
             return Color.WHITE.value
