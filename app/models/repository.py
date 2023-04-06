@@ -1,16 +1,14 @@
-import arrow
-
 from app.utils import Message, Color
 from app.models.discord_api import DiscordApi
 
 
-class PullRequest:
+class Repository:
     def __init__(self, settings):
         self.type = settings[0]
         self.discord_api = DiscordApi(settings[1], settings[2])
         
     def _color_switch(self, value) -> str:
-        if value in ["completed"]:
+        if value in ["push", "completed"]:
             return Color.GREEN.value
         elif value in ["abandoned"]:
             return Color.RED.value
@@ -27,7 +25,7 @@ class PullRequest:
         else:
             return value
     
-    def webhook(self, type, data):    
+    def pull_request(self, type, data):    
         try:
             if type == "updated":
                 if data["resource"]["status"] != "active":
@@ -42,12 +40,10 @@ class PullRequest:
             if pr_type == "comment":
                 url = data["resource"]["comment"]["_links"]["self"]["href"]
                 author = data["resource"]["comment"]["author"]["displayName"]
-                author_image = data["resource"]["comment"]["author"]["imageUrl"]
                 date = data["resource"]["comment"]["publishedDate"]
             else:
                 url = data["resource"]["url"]
                 author = data["resource"]["createdBy"]["displayName"]
-                author_image = data["resource"]["createdBy"]["imageUrl"]
                 date = data["resource"]["creationDate"]
             
             description = data["detailedMessage"]["markdown"]
@@ -66,8 +62,47 @@ class PullRequest:
                     "url": url,
                     "color": color,
                     "author": {
-                        "name": author,
-                        "icon_url": author_image
+                        "name": author
+                    },
+                    "footer": {
+                        "text": "At"
+                    },
+                    "timestamp": date
+                    }
+                ],
+                "username": "Azure Devops",
+                "attachments": []
+            }
+        
+            
+            return self.discord_api.post_webhook(body)
+                
+        except KeyError as e:
+            return ({"error": Message.KEY_ERROR_MESSAGE.value.format(e.args[0].upper())}), 400
+
+    def push(self, type, data):
+        try:
+            title = f"{type.capitalize()}"
+
+            url = data["resource"]["url"]
+            author = data["resource"]["pushedBy"]["displayName"]
+            
+            date = data["resource"]["date"]
+            
+            description = data["detailedMessage"]["markdown"]
+            
+            color = int(self._color_switch(type), 16)
+                    
+            body = {
+                "content": None,
+                "embeds": [
+                    {
+                    "title": title,
+                    "description": description,
+                    "url": url,
+                    "color": color,
+                    "author": {
+                        "name": author
                     },
                     "footer": {
                         "text": "At"
